@@ -14,13 +14,14 @@ const configFileNameObj: Record<EnvKey, string> = {
     prod: 'prod',
 };
 
-const rawEnv = process.env.NODE_ENV || 'dev';
-if (rawEnv !== 'dev' && rawEnv !== 'test' && rawEnv !== 'prod') {
-    throw new Error(`不支持的 NODE_ENV：${rawEnv}`);
-}
-const env: EnvKey = rawEnv;
-
-console.log(`当前环境：${env}`);
 export default () => {
+    const rawEnv = process.env.NODE_ENV || 'dev';
+    if (rawEnv !== 'dev' && rawEnv !== 'test' && rawEnv !== 'prod') {
+        throw new Error(`不支持的 NODE_ENV：${rawEnv}`);
+    }
+    const env: EnvKey = rawEnv;
+
+    console.log(`当前环境：${env}`);
+
     return yaml.load(readFileSync(join(import.meta.dirname, `./${configFileNameObj[env]}.yml`), 'utf8')) as Record<string, unknown>;
 }
