@@ -1,0 +1,48 @@
+# 开发环境配置
+app:
+  prefix: ''
+  port: 3000
+  # 文件相关
+  file:
+    # 是否为本地文件服务或cos
+    isLocal: true
+    # location 文件上传后存储目录，相对路径（相对本项目根目录）或绝对路径
+    location: '../upload'
+    # 文件服务器地址，这是开发环境的配置 生产环境请自行配置成可访问域名
+    domain: 'http://localhost:8080'
+    # 文件虚拟路径, 必须以 / 开头， 如 http://localhost:8080/profile/****.jpg  , 如果不需要则 设置 ''
+    serveRoot: '/profile'
+    # 文件大小限制，单位M
+    maxSize: 500
+# 数据库配置
+db:
+  mysql:
+    host: '127.0.0.1'
+    username: 'root'
+    password: 'root'
+    database: 'leo_nestwebsite'
+    port: 3306
+    charset: 'utf8mb4'
+    # SQL日志，file 代表文件（ormlogs.log） console 是控制台打印
+    logger: 'file'
+    logging: true
+    # 允许一次发送多条 SQL 语句，安全风险：容易造成 SQL 注入攻击，所以默认是 false。
+    multipleStatements: false
+    # 每次启动是否自动删库重建
+    dropSchema: false
+    # 是否自动根据实体同步数据库 schema
+    synchronize: true
+    # MySQL 返回 BIGINT / DECIMAL 时避免精度丢失JS 数字最大安全值是：9007199254740991v如果数据超出或可能超出，则开启这个选项
+    supportBigNumbers: true
+    # 将 BIGINT / DECIMAL 以字符串形式返回，避免精度问题
+    bigNumberStrings: true
+    # 时区
+    timezone: '+08:00'
+
+# redis 配置
+redis:
+  host: 'localhost'
+  password: '123456'
+  port: 6379
+  db: 0
+  keyPrefix: ''
