@@ -10,6 +10,10 @@ async function bootstrap() {
     cors: true,
   });
 
+  // 让 NestJS 应用能正确响应进程退出信号，执行优雅关闭，尤其用了 Prisma
+  // 这样 Nest 关闭时会调用 PrismaService.onModuleDestroy() 并释放 MariaDB 连接池。
+  app.enableShutdownHooks();
+
   // 限流配置
   app.use(
     rateLimit({

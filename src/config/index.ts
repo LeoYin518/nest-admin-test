@@ -1,27 +1,55 @@
-/**
-  readFileSync：Node.js 内置的 fs 模块方法，用来同步读取文件内容。
-  js-yaml：一个库，用来把 YAML 文件 转成 JS 对象。
-  join：Node.js 内置的 path 模块方法，用来拼接路径，保证跨平台（Win/Linux/Mac）都能正确使用。
- */
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import * as yaml from 'js-yaml';
-import { join } from 'path';
 
-type EnvKey = 'dev' | 'test' | 'prod';
-const configFileNameObj: Record<EnvKey, string> = {
-    dev: 'dev',
-    test: 'test',
-    prod: 'prod',
-};
+export interface MysqlConfig {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    database: string;
+    charset: string;
+    timezone: string;
+    connectionLimit: number;
+    logging: boolean;
+}
 
-export default () => {
-    const rawEnv = process.env.NODE_ENV || 'dev';
-    if (rawEnv !== 'dev' && rawEnv !== 'test' && rawEnv !== 'prod') {
-        throw new Error(`不支持的 NODE_ENV：${rawEnv}`);
+export interface AppConfig extends Record<string, unknown> {
+    db: {
+        mysql: MysqlConfig;
+    };
+}
+
+const configDir = dirname(fileURLToPath(import.meta.url));
+
+export default function configuration(): AppConfig {
+    const env = process.env.NODE_ENV || 'dev';
+
+    if (env !== 'dev' && env !== 'test' && env !== 'prod') {
+        throw new Error(`不支持的 NODE_ENV：${env}`);
     }
-    const env: EnvKey = rawEnv;
 
-    console.log(`当前环境：${env}`);
+    const content = readFileSync(
+        join(configDir, `${env}.yml`),
+        'utf8',
+    );
 
-    return yaml.load(readFileSync(join(import.meta.dirname, `./${configFileNameObj[env]}.yml`), 'utf8')) as Record<string, unknown>;
+    const config = yaml.load(content) as AppConfig;
+    const mysql = config?.db?.mysql;
+
+    if (
+        !mysql ||
+        !mysql.host ||
+        !mysql.username ||
+        !mysql.database ||
+        typeof mysql.password !== 'string' ||
+        !Number.isInteger(mysql.port) ||
+        mysql.port < 1 ||
+        mysql.port > 65535
+    ) {
+        throw new Error(`${env}.yml 中的 db.mysql 配置不完整或端口无效`);
+    }
+
+    return config;
 }
