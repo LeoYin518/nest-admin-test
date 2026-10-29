@@ -8,6 +8,7 @@ import { UserConstants } from '../../common/constants.js';
 
 @Injectable()
 export class UserService {
+
   constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
@@ -119,6 +120,17 @@ export class UserService {
     const result = await this.prisma.user.delete({
       where: {
         id
+      }
+    })
+    return ResponseUtil.success(result);
+  }
+
+  async removeByIds(ids: number[]) {
+    const result = await this.prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids
+        }
       }
     })
     return ResponseUtil.success(result);

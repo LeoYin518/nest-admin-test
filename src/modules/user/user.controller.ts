@@ -32,4 +32,9 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @Post('multiDelete')
+  removeByIds(@Body("ids") ids: number[]) {
+    return this.userService.removeByIds(ids);
+  }
 }
