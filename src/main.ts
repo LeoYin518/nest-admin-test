@@ -2,6 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ConfigService } from '@nestjs/config';
 import rateLimit from 'express-rate-limit';
+import { ValidationPipe } from '@nestjs/common';
+import { validationExceptionFactory } from './common/response.js'
+import { DateFormatInterceptor } from './common/date-format.interceptor.js';
 
 async function bootstrap() {
 
@@ -13,6 +16,18 @@ async function bootstrap() {
   // 让 NestJS 应用能正确响应进程退出信号，执行优雅关闭，尤其用了 Prisma
   // 这样 Nest 关闭时会调用 PrismaService.onModuleDestroy() 并释放 MariaDB 连接池。
   app.enableShutdownHooks();
+
+  // 开启管道配置
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      exceptionFactory: validationExceptionFactory,
+    }),
+  );
+
+  // 全局响应拦截器
+  app.useGlobalInterceptors(new DateFormatInterceptor());
 
   // 限流配置
   app.use(

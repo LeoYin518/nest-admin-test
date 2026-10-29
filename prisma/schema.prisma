@@ -10,10 +10,16 @@ datasource db {
   provider = "mysql" // 或 "postgresql"
 }
 
+/// 用户表
 model User {
+  /// id
   id        Int      @id @default(autoincrement())
+  /// 账号
   username  String   @unique @db.VarChar(50)
+  /// 密码
   password  String   @db.VarChar(255)
+  /// 角色 common=普通用户 admin=超级管理员
+  role      String   @db.VarChar(100) @default("common")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
