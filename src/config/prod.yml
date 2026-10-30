@@ -18,8 +18,5 @@ db:
 
 # redis 配置
 redis:
-  host: 'localhost'
-  password: '123456'
-  port: 6379
-  db: 0
-  keyPrefix: ''
+  # Redis 5 及以下仅支持 AUTH password，密码前要保留 URI 的冒号以省略用户名。
+  url: 'redis://:123456@localhost:6379'

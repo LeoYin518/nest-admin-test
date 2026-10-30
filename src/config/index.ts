@@ -19,6 +19,9 @@ export interface AppConfig extends Record<string, unknown> {
     db: {
         mysql: MysqlConfig;
     };
+    redis: {
+        url: string;
+    };
 }
 
 const configDir = dirname(fileURLToPath(import.meta.url));

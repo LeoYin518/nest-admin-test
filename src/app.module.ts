@@ -6,6 +6,9 @@ import configuration from './config/index.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { UserModule } from './modules/user/user.module.js';
 import { LoginModule } from './modules/login/login.module.js';
+import { RedisModule } from './redis/redis.module.js';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard.js';
 
 @Module({
   imports: [
@@ -17,8 +20,12 @@ import { LoginModule } from './modules/login/login.module.js';
     PrismaModule,
     UserModule,
     LoginModule,
+    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: AuthGuard,
+  },],
 })
 export class AppModule { }

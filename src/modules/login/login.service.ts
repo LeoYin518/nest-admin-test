@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { LoginBody } from './dto/login-body.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { ResponseUtil } from '../../common/response.js';
-import { UserConstants } from '../../common/constants.js';
+import { RedisKey, UserConstants } from '../../common/constants.js';
 import { randomUUID } from 'crypto';
+import { RedisService } from '../../redis/redis.service.js';
 
 @Injectable()
 export class LoginService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService,
+        private readonly redis: RedisService
+    ) { }
     async doLogin(loginBody: LoginBody) {
         const { username, password } = loginBody
         const user = await this.prisma.user.findUnique({
@@ -22,6 +25,7 @@ export class LoginService {
             return ResponseUtil.fail(UserConstants.PASSWORD_ERROR)
         }
         const token = randomUUID();
+        await this.redis.client.set(RedisKey.USER_LOGIN_TOKEN + token, JSON.stringify(user), 'EX', 1800)
         return ResponseUtil.success(token)
     }
 }

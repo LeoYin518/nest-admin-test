@@ -4,3 +4,7 @@ export const UserConstants = {
     FORBIDDEN: '权限不足',
     USER_EXISTS: '账号已存在'
 }
+
+export const RedisKey = {
+    USER_LOGIN_TOKEN: 'login_token:'
+}
